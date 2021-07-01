@@ -1,0 +1,2 @@
+# discordbot-oitito
+bola oito
