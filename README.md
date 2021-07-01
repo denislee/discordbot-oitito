@@ -1,2 +1,3 @@
 # discordbot-oitito
-bola oito
+
+simple eight ball bot
