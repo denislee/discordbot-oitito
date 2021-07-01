@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -34,10 +33,7 @@ func main() {
 
 	botToken := os.Getenv("BOT_TOKEN")
 
-	Answers, err := loadFile("./answers.txt")
-	if err != nil {
-		log.Fatal("error loading answers.txt.")
-	}
+	Answers, _ = loadFile("./answers.txt")
 
 	fmt.Println("loaded ", Answers)
 
