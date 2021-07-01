@@ -1,17 +1,19 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"math/rand"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/nanobox-io/golang-scribble"
 )
 
 // invite link : https://discord.com/oauth2/authorize?client_id=858208414379409449&scope=bot+applications.commands
@@ -25,18 +27,19 @@ type Counter struct {
 var (
 	Token   string
 	current int
-	answers []string
+	Answers []string
 )
 
 func main() {
 
 	botToken := os.Getenv("BOT_TOKEN")
 
-	answers, err = loadFile("./answers.txt")
+	Answers, err := loadFile("./answers.txt")
 	if err != nil {
 		log.Fatal("error loading answers.txt.")
 	}
 
+	fmt.Println("loaded ", Answers)
 
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + botToken)
@@ -80,18 +83,29 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// prefix "!8" found
 	if strings.HasPrefix(m.Content, "!8") {
-		addOne()
 		s.ChannelMessageSend(m.ChannelID, getAnswer())
 		return
 	}
 
 }
 
-func findString(source, target string) bool {
-	return strings.Contains(strings.ToLower(source), target)
-}
-
 func getAnswer() string {
 	rand.Seed(time.Now().Unix())
-	return answers[rand.Intn(len(answers))]
+	return Answers[rand.Intn(len(Answers))]
+}
+
+func loadFile(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := strings.Split(scanner.Text(), "#")[0]
+		lines = append(lines, strings.Trim(text, " "))
+	}
+	return lines, scanner.Err()
 }
